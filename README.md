@@ -1,1 +1,1 @@
-# paper_xxxxx_2022_irc_flexible-matlab-simulink-robots-simulator
+# paper_guedelha_2022_irc_flexible-matlab-simulink-robots-simulator
