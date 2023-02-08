@@ -30,9 +30,52 @@ Physics simulators are widely used in robotics fields, from mechanical design to
 
 ### Installation and Usage
 
-:construction: Work in progress (one-line installer and a few comments)
+This section describes the steps for installing the simulation framework required for reproducing the experiments depicted in the paper.
+- For users not familiar with the `conda` package manager nor [Git](https://git-scm.com/) version control system, we recommend to use a [one line installer](https://github.com/robotology/robotology-superbuild/blob/master/doc/matlab-one-line-install.md#one-line-installation-of-robotology-matlabsimulink-packages) as described in the following sections.
+- Otherwise, users can: either use the [Conda package manager](https://anaconda.org) for installing directly the `conda` package [`matlab-whole-body-simulator`](https://anaconda.org/robotology/matlab-whole-body-simulator)[^1], following the guidelines in https://github.com/ami-iit/matlab-whole-body-simulator/blob/master/README.md#binary-installation-from-the-conda-robotology-channel); either install the simulator library from source, following the guidelines in https://github.com/ami-iit/matlab-whole-body-simulator/blob/master/README.md#floppy_disk-source-installation.  
 
-For further information, please refer to the documentation in simulator project repository [README.md](https://github.com/ami-iit/matlab-whole-body-simulator/blob/master/README.md).
+[^1]: available since the `conda` build number 8 of the `conda` binaries hosted in the [robotology conda channel](https://anaconda.org/robotology).
+
+For the complete installation guide, please refer to the documentation in simulator project repository [README.md](https://github.com/ami-iit/matlab-whole-body-simulator/blob/master/README.md).
+
+
+#### :floppy_disk: One Line Installation
+
+The one line installer can be downloaded and run from the Matlab command line, without any access to a terminal:
+1. Run Matlab.
+1. In the Matlab command line change the current folder to a directory where you wish to download the one installer script and install all the packages.
+1. Run the following commands:
+```matlab
+websave('install_robotology_packages.m', 'https://raw.githubusercontent.com/robotology/robotology-superbuild/master/scripts/install_robotology_packages.m')
+install_robotology_packages('installPrefix',<arbitrary-install-absolute-path-without-spaces>)
+robotology_setup
+```
+
+By default, this will install all the robotology packages related to MATLAB or Simulink in a `robotology-matlab` local directory, without perturbing anything else in your system:
+the Yarp and iDynTree, OSQP and  Casadi MATLAB bindings, the WB-toolbox, the iCub models, the MATLAB Whole-body Controllers and the **matlab-whole-body-simulator** conda package.
+You can provide an alternative installation path by calling instead `install_robotology_packages('installPrefix',<arbitrary-install-absolute-path-without-spaces>)`. If the path has spaces, use `\` to espace them. Once the packages have been installed, you just need to re-run the `robotology_setup` script at each MATLAB restart (or add it in your [`setup.m`](https://www.mathworks.com/help/matlab/ref/startup.html) file) to make the library available again.
+
+#### :eyes: Checking The Installation
+1. After the one-line installation and running `robotology_setup`, you should be able to run the following MATLAB code without any error:
+```
+vec = iDynTree.Vector3();
+vec.fromMatlab([1,2,3])
+vec.toString();
+```
+1. Check the MATLABPATH environment variable. It should now have...
+    ```
+    <install-path>/miniforge3/envs/robotologyenv/mex: <install-path>/miniforge3/envs/robotologyenv/share/WBToolbox: <install-path>/miniforge3/envs/robotologyenv/share/WBToolbox/images
+    ```
+    Check the mex and Simulink libraries in the folder `<install-path>/miniforge3/envs/robotologyenv/mex`. It should contain:
+    ```
+    +iDynTree               BlockFactory.mexmaci64      mwbs_lib.slx
+    +iDynTreeWrappers       BlockFactory.tlc            mwbs_robotDynamicsWithContacts_lib.slx
+    +mwbs                   iDynTreeMEX.mexmaci64       mwbs_robotSensors_lib.slx
+    +yarp.                  yarpMEX.mexmaci64           mwbs_visualizers_lib.slx
+    ```
+1. The `Matla Whole Body Simulator` library, along with the sub-libraries **robotDynamicsWithContacts**, **robotSensors** and **visualizers** should be visible in the Simulink Library Browser. They can be drag and dropped into any open Simulink model.
+<img width="963" alt="image" src="https://user-images.githubusercontent.com/6848872/116485698-1ff57580-a88c-11eb-8856-c4527e00b401.png">
+
 
 ### Reproducing The Experiments
 
