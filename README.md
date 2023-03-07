@@ -77,13 +77,38 @@ vec.toString();
     +mwbs                   iDynTreeMEX.mexmaci64       mwbs_robotSensors_lib.slx
     +yarp.                  yarpMEX.mexmaci64           mwbs_visualizers_lib.slx
     ```
-1. The `Matlab Whole-Body Simulator` library, along with the sub-libraries **robotDynamicsWithContacts**, **robotSensors** and **visualizers** should be visible in the Simulink Library Browser. They can be drag and dropped into any open Simulink model.
+1. The `Matlab Whole-Body Simulator` library, along with the sub-libraries **robotDynamicsWithContacts**, **robotSensors** and **visualizers** should be visible in the Simulink Library Browser. They can be dragged and dropped into any open Simulink model.
 <img width="963" alt="image" src="https://user-images.githubusercontent.com/6848872/116485698-1ff57580-a88c-11eb-8856-c4527e00b401.png">
 
 
 ### Reproducing The Experiments
 
-:construction: Work in progress
+We run three sets of experiments for:
+- illustrating the simulation speed improvement resulting from the introduction of the Simulink Functions,
+- validating the simulator with a momentum-based whole-body torque controller performing a complex trajectory,
+- comparing our simulator with Gazebo,
+- illustrating the flexibility of our simulator design when adding new features.
+
+#### Analysing the Simulation Speed Improvement
+
+The first set of experiments aims at illustrating the simulation speed improvement resulting from the introduction of the Simulink Functions.
+This relates to Sections III - A & B of the paper.
+
+#### Testing on a Momentum-based Whole-body Torque Controller
+
+The experiment tests the simulator on controller performing a complex trajectory. For this purpose we integrated the simulator library, configured to emulate the iCub humanoid robot model with 23 degrees of freedom, with a momentum-based whole-body torque controller. The controller task balances the robot on a single foot while performing dynamic motions with the arms and the free leg.
+This relates to Section III - C of the paper.
+
+#### Comparing our Simulator with Gazebo
+
+The third set of experiments compares our simulator with Gazebo, commonly used in the robotics community, while running a benchmark test we define for that purpose.
+This relates to Section III - D of the paper.
+
+#### Analysing the Design Flexibility
+
+In this experiment we add a new feature to the simulation framework, namely the support of a contact model for spherical feet. The goal is to illustrate the flexibility in the framework implementation.
+This relates to Section III - E of the paper.
+
 
 ### Results
 
