@@ -81,9 +81,9 @@ vec.toString();
 <img width="963" alt="image" src="https://user-images.githubusercontent.com/6848872/116485698-1ff57580-a88c-11eb-8856-c4527e00b401.png">
 
 
-### Reproducing The Experiments
+### Reproducing The Simulation Experiments
 
-We run three sets of experiments for:
+We run four sets of simulation experiments for:
 - illustrating the simulation speed improvement resulting from the introduction of the Simulink Functions,
 - validating the simulator with a momentum-based whole-body torque controller performing a complex trajectory,
 - comparing our simulator with Gazebo,
@@ -94,9 +94,11 @@ We run three sets of experiments for:
 The first set of experiments aims at illustrating the simulation speed improvement resulting from the introduction of the Simulink Functions.
 This relates to Sections III - A & B of the paper.
 
+Please refer to section [docs/analysing-the-simulation-speed-improvement.md](./docs/analysing-the-simulation-speed-improvement.md).
+
 #### Testing on a Momentum-based Whole-body Torque Controller
 
-The experiment tests the simulator on controller performing a complex trajectory. For this purpose we integrated the simulator library, configured to emulate the iCub humanoid robot model with 23 degrees of freedom, with a momentum-based whole-body torque controller. The controller task balances the robot on a single foot while performing dynamic motions with the arms and the free leg.
+This set of experiments tests the simulator on a controller performing a complex trajectory. For this purpose we integrated the simulator library, configured to emulate the iCub humanoid robot model with 23 degrees of freedom, with a momentum-based whole-body torque controller. The controller task balances the robot on a single foot while performing dynamic motions with the arms and the free leg.
 This relates to Section III - C of the paper.
 
 #### Comparing our Simulator with Gazebo
