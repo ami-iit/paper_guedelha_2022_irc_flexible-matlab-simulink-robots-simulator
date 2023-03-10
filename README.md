@@ -42,9 +42,9 @@ For the complete installation guide, please refer to the documentation in simula
 
 #### :floppy_disk: One Line Installation
 
-The one line installer can be downloaded and run from the Matlab command line, without any access to a terminal:
-1. Run Matlab.
-1. In the Matlab command line change the current folder to a directory where you wish to download the one installer script and install all the packages.
+The one line installer can be downloaded and run from the MATLAB command line, without any access to a terminal:
+1. Run MATLAB.
+1. In the MATLAB command line change the current folder to a directory where you wish to download the one installer script and install all the packages.
 1. Run the following commands:
 ```matlab
 websave('install_robotology_packages.m', 'https://raw.githubusercontent.com/robotology/robotology-superbuild/master/scripts/install_robotology_packages.m')
@@ -58,6 +58,8 @@ the Yarp and iDynTree, OSQP and  Casadi MATLAB bindings, the WB-toolbox, the iCu
 **Install path provided:** You can provide an alternative installation path by calling instead `install_robotology_packages('installPrefix',<arbitrary-install-absolute-path-without-spaces>)`. If the path has spaces, use `\` to escape them.
 
 Once the packages have been installed, you just need to re-run the `robotology_setup` script at each MATLAB restart (or add it in your [`setup.m`](https://www.mathworks.com/help/matlab/ref/startup.html) file) to make the library available again.
+
+1. For reproducing the first set of experiments referred to in section [Analysing the Simulation Speed Improvement](#analysing-the-simulation-speed-improvement), you need to clone the `matlab-whole-body-simulator` repository from https://github.com/ami-iit/matlab-whole-body-simulator.git.
 
 #### :eyes: Checking The Installation
 1. After running the one-line installation and `robotology_setup`, you should be able to run the following MATLAB code without any error:
