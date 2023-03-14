@@ -14,18 +14,16 @@ For measuring the performance we’ve used two profilers, the MATLAB profiler wh
 
 ### Running the Simulation and Profilers
 
-We describe in this section the steps to follow in the MATLAB/Simulink environment in order to run the simulation and profilers, export the profilers output to the workspace as `.mat` files, then run the [`loadTimeSeries.m`](./scripts/loadTimeSeries.m) script for computing the dynamics computation functions execution times and generating the performance comparison plot. For the general usage instructions, refer to the docmentation in https://github.com/ami-iit/matlab-whole-body-simulator/blob/master/README.md#runner-how-to-use-the-simulator.
+We describe in this section the steps to follow in the MATLAB/Simulink environment in order to run the simulation and profilers, export the profilers output data to the workspace as `.mat` files[^1], then run the [`loadTimeSeries.m`](./scripts/loadTimeSeries.m) script for evaluating the execution times of the dynamics computation functions and generating the performance comparison plot. For the general usage instructions, refer to the docmentation in https://github.com/ami-iit/matlab-whole-body-simulator/blob/master/README.md#runner-how-to-use-the-simulator.
 
 In the steps below we assume you have followed and completed the steps in the [One Line Installation](../README.md#floppy_disk-one-line-installation) steps of the main README.
 
-The script generating and plotting the targeted functions execution times can be found in the folder [scripts/loadTimeSeries.m](./scripts/loadTimeSeries.m).
+[^1]: Stored in the folder [data](./data).
 
-The profilers output data can be found in the folder [data](./data).
+#### Profiling before the Code Optimisation
 
-#### Profiling before the Code Optimisation:
-
-- The Simulink profiler tracks the execution of the most outer Simulink block `RobotDynWithContacts` and the Step MATLAB System block within, which which instantiates the class `Robot` and calls the dynamics computation functions. The Simulink profiler tracks only the Step MATLAB System execution self-time, not the MATLAB interpreted code sub-calls, so the core-simulator total execution time is characterised by the Simulink block `RobotDynWithContacts` execution time.
-- The MATLAB profiler cannot track the code produced by the Simulink code generator, so we can count only on the Simulink profiler output for the targeted functions.
+- **Tracking the dynamics computation functions individually:** The MATLAB profiler tracks the execution of all MATLAB interpreted code called from the class `Robot` targeted functions listed above. That code runs a cascade of wrapper functions that call MEX functions built with C Matrix API, and which implement the iDynTree library functions.
+- **Tracking the total execution time:** The Simulink profiler tracks the total execution time of the most outer Simulink block `RobotDynWithContacts` and the execution self-time of the Step MATLAB System block within, which instantiates the class `Robot` and calls the dynamics computation functions. Note that as the Simulink profiler tracks only the Step MATLAB System execution self-time, not the MATLAB interpreted code sub-calls, we characterize the core-simulator total execution time by the Simulink block `RobotDynWithContacts` execution time.
 
 1. In a terminal, go to the directory where you cloned the repository `matlab-whole-body-simulator`and checkout the commit .
 
@@ -59,5 +57,5 @@ The generated report in the GUI window provides the number of calls, the self ti
 
 ### Profiling after the Code Optimisation:
 
-- The MATLAB profiler tracks the execution of all MATLAB interpreted code called from the class `Robot` targeted functions listed above. That code runs a cascade of wrapper functions that call MEX functions built with C Matrix API, and which implement the iDynTree library functions.
-- The Simulink profiler tracks the execution of the most outer Simulink block `RobotDynWithContacts`, the Step MATLAB System block within, and the WBT Simulink blocs implements a C++ abstraction layer wrapping the iDynTree dynamics library through the BlockFectory framework the dynamics computation functions. The Simulink profiler tracks only the Step MATLAB System execution self-time, not the MATLAB interpreted code sub-calls, so the core-simulator total execution time is characterised by the Simulink block `RobotDynWithContacts` execution time.
+- **Tracking the dynamics computation functions individually:** The MATLAB profiler cannot track the code produced by the Simulink code generator, so we can count only on the Simulink profiler output for the targeted functions.
+- **Tracking the total execution time:** The Simulink profiler tracks the execution of the most outer Simulink block `RobotDynWithContacts`, the Step MATLAB System block within, and the Simulink functions (Simulink blocks triggered programmatically from the dynamics computation functions in the class `Robot`).
