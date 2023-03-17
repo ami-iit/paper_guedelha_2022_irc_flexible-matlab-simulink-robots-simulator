@@ -25,7 +25,9 @@ In the steps below we assume you have followed and completed the steps in the [O
 - **Tracking the dynamics computation functions individually:** The MATLAB profiler tracks the execution of all MATLAB interpreted code called from the class `Robot` targeted functions listed above. That code runs a cascade of wrapper functions that call MEX functions built with C Matrix API, and which implement the iDynTree library functions.
 - **Tracking the total execution time:** The Simulink profiler tracks the total execution time of the most outer Simulink block `RobotDynWithContacts` and the execution self-time of the Step MATLAB System block within, which instantiates the class `Robot` and calls the dynamics computation functions. Note that as the Simulink profiler tracks only the Step MATLAB System execution self-time, not the MATLAB interpreted code sub-calls, we characterize the core-simulator total execution time by the Simulink block `RobotDynWithContacts` execution time.
 
-1. In a terminal, go to the directory where you cloned the repository `matlab-whole-body-simulator`and checkout the commit .
+1. In a terminal, go to the directory where you cloned the repository `matlab-whole-body-simulator`and checkout the commit depending on the simulator version you wish to profile:
+    - profiling before the optimisation: use commit 6af23d0d11d3b3153a374d649ce91535104eeb6f.
+    - profiling after the optimisation: use commit 266512a87b6a5bcf438744463855ecbd290d520d.
 
 1. In the MATLAB command line change the current folder to the that same directory where you cloned the `matlab-whole-body-simulator`.
 
@@ -35,8 +37,9 @@ In the steps below we assume you have followed and completed the steps in the [O
 <img width="900" alt="image" src="https://user-images.githubusercontent.com/34647611/159449934-c4af969b-1ee3-461c-bbe9-4b4692745085.png">
 
 1. In the main config initialisation file `./init.m`:
-    - set `Config.USE_OSQP` to `false` (the MATLAB solver `quadprog` shall be used),
-    - set `Config.simulationTime` to `1` (second).
+    - set `Config.simulationTime` to `1` (second),
+    - profiling before the optimisation: set `Config.USE_OSQP` to `false` (the MATLAB solver `quadprog` shall be used),
+    - profiling after the optimisation: set `Config.USE_OSQP` to `false`, `Config.USE_QPOASES` to `true` (the qpOASES[^2] solver shall be used).
 
 1. In this short simulation, we are feeding null torques to the iCub robot model, so you can leave the parameter "input motor reflected inertia format" set to `vector`.
 
@@ -44,16 +47,33 @@ In the steps below we assume you have followed and completed the steps in the [O
 
 1. Open the model `./test_matlab_system.mdl`.
 
-1. Launch the MATLAB profiler GUI window from the command line: `>> profile viewer`.
+1. Run the MATLAB profiler from the command line:
+    - launch the profiler app window which also displays profiling results and the Flame graph: `profile viewer`,
+    - start the profiler from the command line: `profile on`.
 
-1. Generate a profile through the following steps: (1) turn the profiler on; (2) run the model or script; (3) stop the model; (4) turn the profiler off; (5) import the profiler results: `>> p = profile('info')`; (6) save the results to a `.mat` file: `>> save matFileName`.
+1. Run the Simulink profiler and model From the Simulink window:
+    - select the "Debug" tab on the Toolstrip,
+    - click the "Performance Advisor" drop-down and select "Simulink Profiler", this opens a new tab "PROFILE",
+    - in that same tab, hit the "Profile" button to run the model with profiling enabled.
 
-The generated report in the GUI window provides the number of calls, the self time (which excludes child functions execution time) and the total time. The same data is accessible through the imported results.
+1. The Simulink profiler stops automatically after the simulation ends.
 
-1. Generate a new profile result as many times as desired. Figure 3 bar graph in the paper was generated from three reports `./data/profilerResults_before_optim/test_matlab_system_19__22-Sep-2022_02_15_33.mat`, `./data/profilerResults_before_optim/test_matlab_system_19__22-Sep-2022_08_50_43.mat`, `./data/profilerResults_before_optim/test_matlab_system_19__22-Sep-2022_09_00_30.mat`. Profile result file names always follow the pattern `test_matlab_system_*.mat`. If you change that pattern or folder name, remember to reflect it in the script `./loadTimeSeries`.
+1. Export and save the Simulink profiler results into a `<filename>.mat` file by clicking "Export to MAT" in the "PROFILE" tab". This saves the data into a variable `profilerData` in the MAT file.
+
+1. Stop the MATLAB profiler: `profilerData_interpreter = profile('info')`. This also imports the profiler results[^3] into a new variable `profilerData_interpreter` created in the workspace.
+
+1. Save the imported results into the same `<filename>.mat` file created by the Simulink profiler in previous steps: `save("<filename>.mat","profilerData_interpreter","-append")`.
+
+1. For running again the simulation generating new profiling result, do:
+    - turn on again the MATLAB profiler (`profile on`) and hit again the "Profile" button in the "PROFILE" tab".
+    - after the simulation ends, stop the profilers and export the data to a new MAT file.
+    
+    Generate and save a new profile result as many times as desired, with the simulator version before the optimisation and the version after the optimisation. Figure 3 bar graph in the paper was generated from all six reports in the folders `./data/profilerResults_before_optim` and `./data/profilerResults_after_optim`. Profile result file names always follow the pattern `test_matlab_system_*.mat`. If you change that pattern or folder name, remember to reflect it in the script `./loadTimeSeries`.
 
 1. Run the script [scripts/loadTimeSeries.m](./scripts/loadTimeSeries.m) for generating and plotting the targeted functions execution times.
 
+[^2]: For any further details on this solver please refer to https://github.com/coin-or/qpOASES.
+[^3]: The generated report in the GUI window provides the number of calls, the self time (which excludes child functions execution time) and the total time. The same data is accessible through the imported results.
 
 ### Profiling after the Code Optimisation:
 
