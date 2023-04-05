@@ -30,7 +30,8 @@ In the steps below we assume you have followed and completed the steps in the [O
 1. Select the robot model to `iCubGenova04` by setting the environment variable `YARP_ROBOT_NAME`: `setenv('YARP_ROBOT_NAME','iCubGenova04')`
 
 1. Leave the default configuration parameters `robot_config`, `contact_config` and `physics_config` defined in the `./app/robots/iCubGenova04/configRobot.m` file.
-<img width="900" alt="image" src="https://user-images.githubusercontent.com/34647611/159449934-c4af969b-1ee3-461c-bbe9-4b4692745085.png">
+   
+   <img width="900" alt="image" src="https://user-images.githubusercontent.com/34647611/159449934-c4af969b-1ee3-461c-bbe9-4b4692745085.png">
 
 1. In the main config initialisation file `./init.m`:
     - set `Config.simulationTime` to `1` (second),
@@ -38,8 +39,8 @@ In the steps below we assume you have followed and completed the steps in the [O
     - profiling after the optimisation: set `Config.USE_OSQP` to `false`, `Config.USE_QPOASES` to `true` (the qpOASES[^2] solver shall be used).
 
 1. In this short simulation, we are feeding null torques to the iCub robot model, so you can leave the parameter "input motor reflected inertia format" set to `vector`.
-
-<img width="470" alt="image" src="https://user-images.githubusercontent.com/6848872/117595272-adfd1600-b140-11eb-8481-698f7b1773d9.png">
+   
+   <img width="470" alt="image" src="https://user-images.githubusercontent.com/6848872/117595272-adfd1600-b140-11eb-8481-698f7b1773d9.png">
 
 1. Open the model `./test_matlab_system.mdl`.
 

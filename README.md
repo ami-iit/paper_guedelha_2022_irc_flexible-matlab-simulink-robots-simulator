@@ -96,12 +96,14 @@ We run four sets of simulation experiments for:
 The first set of experiments aims at illustrating the simulation speed improvement resulting from the introduction of the Simulink Functions.
 This relates to Sections III - A & B of the paper.
 
-Please refer to section [docs/analysing-the-simulation-speed-improvement.md](./docs/analysing-the-simulation-speed-improvement.md).
+Please refer to section [\<reporoot\>/docs/analysing-the-simulation-speed-improvement.md](./docs/analysing-the-simulation-speed-improvement.md).
 
 #### Testing on a Momentum-based Whole-body Torque Controller
 
 This set of experiments tests the simulator on a controller performing a complex trajectory. For this purpose we integrated the simulator library, configured to emulate the iCub humanoid robot model with 23 degrees of freedom, with a momentum-based whole-body torque controller. The controller task balances the robot on a single foot while performing dynamic motions with the arms and the free leg.
 This relates to Section III - C of the paper.
+
+Please refer to section [\<reporoot\>/docs/testing-on-a-momentum-based-whole-body-torque-controller.md](./docs/testing-on-a-momentum-based-whole-body-torque-controller.md).
 
 #### Comparing our Simulator with Gazebo
 
