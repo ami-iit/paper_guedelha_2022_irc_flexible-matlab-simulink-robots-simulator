@@ -14,7 +14,7 @@ For measuring the performance we’ve used two profilers, the MATLAB profiler wh
 
 ### Running the Simulation and Profilers
 
-We describe in this section the steps to follow in the MATLAB/Simulink environment in order to run the simulation and profilers, export the profilers output data to the workspace as `.mat` files[^1], then run the [`loadTimeSeries.m`](./scripts/loadTimeSeries.m) script for evaluating the execution times of the dynamics computation functions and generating the performance comparison plot. For the general usage instructions, refer to the docmentation in https://github.com/ami-iit/matlab-whole-body-simulator/blob/master/README.md#runner-how-to-use-the-simulator.
+We describe in this section the steps to follow in the MATLAB/Simulink environment in order to run the simulation and profilers, export the profilers output data to the workspace as `.mat` files[^1], then run the [`loadTimeSeries.m`](./scripts/loadTimeSeries.m) script for evaluating the execution times of the dynamics computation functions and generating the performance comparison plot. For the simulator general usage instructions, refer to the docmentation in https://github.com/ami-iit/matlab-whole-body-simulator/blob/master/README.md#runner-how-to-use-the-simulator.
 
 In the steps below we assume you have followed and completed the steps in the [One Line Installation](../README.md#floppy_disk-one-line-installation) steps of the main README.
 
@@ -58,31 +58,45 @@ In the steps below we assume you have followed and completed the steps in the [O
 
 1. Stop the MATLAB profiler: `profilerData_interpreter = profile('info')`. This also imports the profiler results[^3] into a new variable `profilerData_interpreter` created in the workspace.
 
-1. Save the imported results into the same `<filename>.mat` file created by the Simulink profiler in previous steps: `save("<filename>.mat","profilerData_interpreter","-append")`.
+1. Save the imported results into the same `<filename>.mat` file created by the Simulink profiler in previous steps: `save("<filename>.mat","profilerData_interpreter","-append")`. It is crucial to use the `-append` option for not overwriting the profiler data stored in the previous steps.
 
-1. For running again the simulation generating new profiling result, do:
-    - turn on again the MATLAB profiler (`profile on`) and hit again the "Profile" button in the "PROFILE" tab.
-    - after the simulation ends, stop the profilers and export the data to a new MAT file as described previously.
+1. For running again the simulation generating new profiling results, do:
+    - turn on again the MATLAB profiler (`profile on`) and hit again the "Profile" button in the "PROFILE" tab from the Simulink window.
+    - after the simulation ends along with the Simulink profiler, stop the MATLAB profiler and export both profilers data to a new MAT file as described previously.
     
-    Generate and save a new profile result as many times as desired, with the simulator version before the optimisation and the version after the optimisation. Figure 3 bar graph in the paper was generated from all six reports in the folders `./data/profilerResults_before_optim` and `./data/profilerResults_after_optim`. Profile result file names always follow the pattern `test_matlab_system_*.mat`. If you change that pattern or folder name, remember to reflect it in the script `./loadTimeSeries`.
+    Generate and save a new profile result as many times as desired, with the simulator version before the optimisation and the version after the optimisation. Figure 3 bar graph in the paper was generated from all six reports in the folders [`<reporoot>/data/profilerResults_before_optim`](./data/profilerResults_before_optim) and [`<reporoot>/data/profilerResults_after_optim`](./data/profilerResults_after_optim). Profile result file names always follow the pattern `test_matlab_system_*.mat`. If you change that pattern or folder name, remember to reflect it in the script [`<reporoot>/scripts/loadTimeSeries.m`](./scripts/loadTimeSeries.m).
 
-1. Run the script [scripts/loadTimeSeries.m](./scripts/loadTimeSeries.m) for generating and plotting the targeted functions execution times.
+1. Run the script [`<reporoot>/scripts/loadTimeSeries.m`](./scripts/loadTimeSeries.m) for generating and plotting the targeted functions execution times.
 
 [^2]: For any further details on this solver please refer to https://github.com/coin-or/qpOASES.
 [^3]: The generated report in the GUI window provides the number of calls, the self time (which excludes child functions execution time) and the total time. The same data is accessible through the imported results.
 
 ### On the Profilers and Profiling Script
 
+It is relevant to highlight the Simulink blocks and MATLAB functions call tree: the most outer Simulink block `RobotDynWithContacts` wraps the MATLAB System block `step_block` implemented by the respective class. The latter defines methods `setupImpl` and `stepImpl` which respectively instantiate the class `Robot` and call its dynamics computation functions that we wish to track, namely `get_mass_matrix`, `get_bias_forces`, `get_feet_jacobians`, `get_feet_JDot_nu` and `get_feet_H`. Before the code optimisation, these functions run a cascade of wrapper functions that call MEX functions built with C Matrix API, and which implement the respective iDynTree library dynamics algorithms. Instead, after the code optimisation, these functions call special methods in the class `Robot` called "Simulink Functions" which trigger programmatically Simulink blocks implementing the equivalent computations.
+
 #### Profiling before the Code Optimisation
-- The Simulink profiler tracks the total execution times of the most outer Simulink block `RobotDynWithContacts` and the MATLAB System block within, implemented by the class `step_block`. The later defines methods `setupImpl` and `stepImpl` which respectively instantiate the class `Robot` and call its dynamics computation functions that we wish to track. The MATLAB System block `step_block` total execution time includes the total execution time of `stepImpl` (that of `setupImpl` being negligible).
-- The MATLAB profiler tracks the execution of all MATLAB interpreted code called from `stepImpl`, including the class `Robot` dynamics computation functions mentioned earlier (`get_mass_matrix`, `get_bias_forces`, `get_feet_jacobians`, `get_feet_JDot_nu`, `get_feet_H`)[^4].
 
-[^4]: These functions run a cascade of wrapper functions that call MEX functions built with C Matrix API, and which implement the iDynTree library functions.
+The Simulink profiler tracks the total execution times of the most outer Simulink block `RobotDynWithContacts` and the MATLAB System block `step_block` within, which total execution time matches the total execution time of `stepImpl`, that of `setupImpl` being negligible.
 
-- **Tracking the dynamics computation functions individually:** The MATLAB profiler tracks the execution of all MATLAB interpreted code called from the class `Robot` targeted functions listed above. That code runs a cascade of wrapper functions that call MEX functions built with C Matrix API, and which implement the iDynTree library functions.
-- **Tracking the total execution time:** The Simulink profiler tracks the total execution time of the most outer Simulink block `RobotDynWithContacts` and the execution self-time of the MATLAB System block within, binded to the class "step_block" which instantiates the class `Robot` and calls the dynamics computation functions. Note that as the Simulink profiler tracks only the Step MATLAB System execution self-time, not the MATLAB interpreted code sub-calls, we characterize the core-simulator total execution time by the Simulink block `RobotDynWithContacts` execution time.
+The MATLAB profiler tracks the execution of all MATLAB interpreted code called from `stepImpl`, including the class `Robot` dynamics computation functions mentioned earlier.
+
+Having in mind the profilers behaviour described above, we proceed as follows:
+- **Tracking the outer Simulink block `RobotDynWithContacts`:** We use the Simulink profiler tracking results from `profilerData.rootUINode.children(1).totalTime`.
+- **Tracking the MATLAB System block `step_block`:** We could arbitrarily use either MATLAB or Simulink profilers results (respectively the method `setupImpl` result from the table `profilerData_interpreter.FunctionTable` or the MATLAB System block `step_block` result from the single element array `profilerData.rootUINode.children(1).children`). Nevertheless, the MATLAB profiler cannot track the code produced by the Simulink code generator after the code optimisation, thus, for comparing results produced by the same profiler, we chose the Simulink profiler result `profilerData.rootUINode.children(1).children.totalTime`.
+- **Tracking the `Robot` class methods `get_mass_matrix`, `get_bias_forces`, `get_feet_jacobians`, `get_feet_JDot_nu` and `get_feet_H`:** We use the MATLAB profiler tracking results from the array `profilerData_interpreter.FunctionTable`. each element of the array has a function name `FunctionName` matching the respective method from the class `Robot`, and a `TotalTime` execution time in seconds.
 
 #### Profiling after the Code Optimisation:
 
-- **Tracking the dynamics computation functions individually:** The MATLAB profiler cannot track the code produced by the Simulink code generator, so we can count only on the Simulink profiler output for the targeted functions.
-- **Tracking the total execution time:** The Simulink profiler tracks the execution of the most outer Simulink block `RobotDynWithContacts`, the Step MATLAB System block within, and the Simulink functions (Simulink blocks triggered programmatically from the dynamics computation functions in the class `Robot`).
+The Simulink profiler tracks the total execution times of the most outer Simulink block `RobotDynWithContacts`, the MATLAB System block `step_block` within and the Simulink functions triggered programmatically from the dynamics computation functions in the class `Robot`.
+
+The MATLAB profiler cannot track the code produced by the Simulink code generator, so we can count only on the Simulink profiler output for the targeted functions.
+
+Having in mind the profilers behaviour described above, we proceed as follows:
+- **Tracking the outer Simulink block `RobotDynWithContacts`:** We use the Simulink profiler tracking results from `profilerData.rootUINode.children(1).totalTime` as previously.
+- **Tracking the MATLAB System block `step_block`:** We use the Simulink profiler tracking results from `profilerData.rootUINode.children(1).children(1)`.
+- **Tracking the `Robot` class methods `get_mass_matrix`, `get_bias_forces`, `get_feet_jacobians`, `get_feet_JDot_nu` and `get_feet_H`:** We use the Simulink profiler tracking results from the array `profilerData.rootUINode.children(1).children`. The array has no function names which we could use to directly match the respective method from the class `Robot`. Instead we used hardcoded indexes (refer to table `matlabProfilerFunctionNames`, column `funcIndex` in the `loadTimeSeries.m` script). 
+
+
+#### Note
+As the MATLAB profiler slows down the simulation by a factor of 1.48 when monitoring the non optimised model, while having no impact on the modelwhich uses Simulink functions, we apply the respective correction factor to the MATLAB profiler tracking results (refer to `matlabProfilerPenaltyComp` in the `loadTimeSeries.m` script).
