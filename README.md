@@ -18,7 +18,6 @@ N. Guedelha, V. Pasandi, G. L'Erario, S. Traversaro and D. Pucci, "A Flexible MA
 <div align="center">
 <a href="#installation-and-usage"><b>Installation and Usage</b></a> |
 <a href="#reproducing-the-experiments"><b>Reproducing The Experiments</b></a> |
-<a href="#results"><b>Results</b></a> |
 <a href="https://ieeexplore.ieee.org/document/10023775"><b>IEEE</b></a> |
 <a href="https://arxiv.org/abs/2211.09716"><b>arXiv</b></a> |
 <a href="#citing-this-work"><b>Cite</b></a>
@@ -115,10 +114,6 @@ This relates to Section III - D of the paper.
 In this experiment we add a new feature to the simulation framework, namely the support of a contact model for spherical feet. The goal is to illustrate the flexibility in the framework implementation.
 This relates to Section III - E of the paper.
 
-
-### Results
-
-:construction: Work in progress
 
 ### Citing this work
 
