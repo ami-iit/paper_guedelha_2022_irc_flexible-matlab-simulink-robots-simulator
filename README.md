@@ -8,7 +8,6 @@ N. Guedelha, V. Pasandi, G. L'Erario, S. Traversaro and D. Pucci, "A Flexible MA
 </div>
 
 <p align="center">
-:construction: Work in progress (recording of the slides)
 </p>
 
 <div align="center">
@@ -18,7 +17,6 @@ N. Guedelha, V. Pasandi, G. L'Erario, S. Traversaro and D. Pucci, "A Flexible MA
 <div align="center">
 <a href="#installation-and-usage"><b>Installation and Usage</b></a> |
 <a href="#reproducing-the-experiments"><b>Reproducing The Experiments</b></a> |
-<a href="#results"><b>Results</b></a> |
 <a href="https://ieeexplore.ieee.org/document/10023775"><b>IEEE</b></a> |
 <a href="https://arxiv.org/abs/2211.09716"><b>arXiv</b></a> |
 <a href="#citing-this-work"><b>Cite</b></a>
@@ -30,17 +28,97 @@ Physics simulators are widely used in robotics fields, from mechanical design to
 
 ### Installation and Usage
 
-:construction: Work in progress (one-line installer and a few comments)
+This section describes the steps for installing the simulation framework required for reproducing the experiments depicted in the paper.
+- For users not familiar with the `conda` package manager nor [Git](https://git-scm.com/) version control system, we recommend to use a **one line installer**[^1] as described in the following sections.
+- Otherwise, users can: either use the [Conda package manager](https://anaconda.org) for installing directly the `conda` package [`matlab-whole-body-simulator`](https://anaconda.org/robotology/matlab-whole-body-simulator)[^2], following the guidelines in https://github.com/ami-iit/matlab-whole-body-simulator/blob/master/README.md#binary-installation-from-the-conda-robotology-channel); either install the simulator library from source, following the guidelines in https://github.com/ami-iit/matlab-whole-body-simulator/blob/master/README.md#floppy_disk-source-installation.  
 
-For further information, please refer to the documentation in simulator project repository [README.md](https://github.com/ami-iit/matlab-whole-body-simulator/blob/master/README.md).
+[^1]: For the original fully detailed guidelines, you can refer to https://github.com/robotology/robotology-superbuild/blob/master/doc/matlab-one-line-install.md#one-line-installation-of-robotology-matlabsimulink-packages.
+[^2]: Available since the `conda` build number 8 of the `conda` binaries hosted in the [robotology conda channel](https://anaconda.org/robotology).
 
-### Reproducing The Experiments
+For the complete installation guide, please refer to the documentation in simulator project repository [README.md](https://github.com/ami-iit/matlab-whole-body-simulator/blob/master/README.md).
 
-:construction: Work in progress
 
-### Results
+#### :floppy_disk: One Line Installation
 
-:construction: Work in progress
+The one line installer can be downloaded and run from the MATLAB command line, without any access to a terminal:
+1. Run MATLAB.
+1. In the MATLAB command line change the current folder to a directory where you wish to download the one installer script and install all the packages.
+1. Run the following commands:
+```matlab
+websave('install_robotology_packages.m', 'https://raw.githubusercontent.com/robotology/robotology-superbuild/master/scripts/install_robotology_packages.m')
+install_robotology_packages()
+robotology_setup
+```
+
+**No install path provided:** If you do not provide any input parameter to `install_robotology_packages`, this function will install all the robotology packages related to MATLAB or Simulink in a default local directory `robotology-matlab` under the working directory, without perturbing anything else in your system:
+the Yarp and iDynTree, OSQP and  Casadi MATLAB bindings, the WB-toolbox, the iCub models, the MATLAB Whole-body Controllers and the **matlab-whole-body-simulator** conda package.
+
+**Install path provided:** You can provide an alternative installation path by calling instead `install_robotology_packages('installPrefix',<arbitrary-install-absolute-path-without-spaces>)`. If the path has spaces, use `\` to escape them.
+
+Once the packages have been installed, you just need to re-run the `robotology_setup` script at each MATLAB restart (or add it in your [`setup.m`](https://www.mathworks.com/help/matlab/ref/startup.html) file) to make the library available again.
+
+1. For reproducing the first set of experiments referred to in section [Analysing the Simulation Speed Improvement](#analysing-the-simulation-speed-improvement), you need to clone the `matlab-whole-body-simulator` repository from https://github.com/ami-iit/matlab-whole-body-simulator.git.
+
+#### :eyes: Checking The Installation
+1. After running the one-line installation and `robotology_setup`, you should be able to run the following MATLAB code without any error:
+   ```
+   vec = iDynTree.Vector3();
+   vec.fromMatlab([1,2,3])
+   vec.toString();
+   ```
+1. Check the MATLABPATH environment variable. It should now have...
+   ```
+   <install-path>/mex: <install-path>/share/WBToolbox: <install-path>/share/WBToolbox/images
+   ```
+   Check the mex and Simulink libraries in the folder `<install-path>/mex`. It should contain:
+   ```
+   +iDynTree               BlockFactory.mexmaci64      mwbs_lib.slx
+   +iDynTreeWrappers       BlockFactory.tlc            mwbs_robotDynamicsWithContacts_lib.slx
+   +mwbs                   iDynTreeMEX.mexmaci64       mwbs_robotSensors_lib.slx
+   +yarp.                  yarpMEX.mexmaci64           mwbs_visualizers_lib.slx
+   ```
+1. The `Matlab Whole-Body Simulator` library, along with the sub-libraries **robotDynamicsWithContacts**, **robotSensors** and **visualizers** should be visible in the Simulink Library Browser. They can be dragged and dropped into any open Simulink model.
+   <img width="963" alt="image" src="https://user-images.githubusercontent.com/6848872/116485698-1ff57580-a88c-11eb-8856-c4527e00b401.png">
+1. General recommendation for verifying that the target robot model is available. You can check if the controller is targeting the correct robot model by typing on the Matlab command line:
+    ```
+    system('yarp resource --find model.urdf')
+    ```
+    then, check that the path and the model name are correct.
+
+
+
+### Reproducing The Simulation Experiments
+
+We run four sets of simulation experiments for:
+- illustrating the simulation speed improvement resulting from the introduction of the Simulink Functions,
+- validating the simulator with a momentum-based whole-body torque controller performing a complex trajectory,
+- comparing our simulator with Gazebo,
+- illustrating the flexibility of our simulator design when adding new features.
+
+#### Analysing the Simulation Speed Improvement
+
+The first set of experiments aims at illustrating the simulation speed improvement resulting from the introduction of the Simulink Functions.
+This relates to Sections III - A & B of the paper.
+
+Please refer to section [\<reporoot\>/docs/analysing-the-simulation-speed-improvement.md](./docs/analysing-the-simulation-speed-improvement.md).
+
+#### Testing on a Momentum-based Whole-body Torque Controller
+
+This set of experiments tests the simulator on a controller performing a complex trajectory. For this purpose we configured the simulator library to emulate the iCub humanoid robot model with 23 degrees of freedom and integrated it with a momentum-based whole-body torque controller. The controller task balances the robot on a single foot while performing dynamic motions with the arms and the free leg.
+This relates to Section III - C of the paper.
+
+Please refer to section [\<reporoot\>/docs/testing-on-a-momentum-based-whole-body-torque-controller.md](./docs/testing-on-a-momentum-based-whole-body-torque-controller.md).
+
+#### Comparing our Simulator with Gazebo
+
+The third set of experiments compares our simulator with Gazebo, commonly used in the robotics community, while running a benchmark test we've defined for that purpose.
+This relates to Section III - D of the paper.
+
+#### Analysing the Design Flexibility
+
+In this experiment we add a new feature to the simulation framework, namely the support of a contact model for spherical feet. The goal is to illustrate the flexibility in the framework implementation.
+This relates to Section III - E of the paper.
+
 
 ### Citing this work
 
