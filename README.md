@@ -62,24 +62,30 @@ Once the packages have been installed, you just need to re-run the `robotology_s
 
 #### :eyes: Checking The Installation
 1. After running the one-line installation and `robotology_setup`, you should be able to run the following MATLAB code without any error:
-```
-vec = iDynTree.Vector3();
-vec.fromMatlab([1,2,3])
-vec.toString();
-```
+   ```
+   vec = iDynTree.Vector3();
+   vec.fromMatlab([1,2,3])
+   vec.toString();
+   ```
 1. Check the MATLABPATH environment variable. It should now have...
-    ```
-    <install-path>/mex: <install-path>/share/WBToolbox: <install-path>/share/WBToolbox/images
-    ```
-    Check the mex and Simulink libraries in the folder `<install-path>/mex`. It should contain:
-    ```
-    +iDynTree               BlockFactory.mexmaci64      mwbs_lib.slx
-    +iDynTreeWrappers       BlockFactory.tlc            mwbs_robotDynamicsWithContacts_lib.slx
-    +mwbs                   iDynTreeMEX.mexmaci64       mwbs_robotSensors_lib.slx
-    +yarp.                  yarpMEX.mexmaci64           mwbs_visualizers_lib.slx
-    ```
+   ```
+   <install-path>/mex: <install-path>/share/WBToolbox: <install-path>/share/WBToolbox/images
+   ```
+   Check the mex and Simulink libraries in the folder `<install-path>/mex`. It should contain:
+   ```
+   +iDynTree               BlockFactory.mexmaci64      mwbs_lib.slx
+   +iDynTreeWrappers       BlockFactory.tlc            mwbs_robotDynamicsWithContacts_lib.slx
+   +mwbs                   iDynTreeMEX.mexmaci64       mwbs_robotSensors_lib.slx
+   +yarp.                  yarpMEX.mexmaci64           mwbs_visualizers_lib.slx
+   ```
 1. The `Matlab Whole-Body Simulator` library, along with the sub-libraries **robotDynamicsWithContacts**, **robotSensors** and **visualizers** should be visible in the Simulink Library Browser. They can be dragged and dropped into any open Simulink model.
-<img width="963" alt="image" src="https://user-images.githubusercontent.com/6848872/116485698-1ff57580-a88c-11eb-8856-c4527e00b401.png">
+   <img width="963" alt="image" src="https://user-images.githubusercontent.com/6848872/116485698-1ff57580-a88c-11eb-8856-c4527e00b401.png">
+1. General recommendation for verifying that the target robot model is available. You can check if the controller is targeting the correct robot model by typing on the Matlab command line:
+    ```
+    system('yarp resource --find model.urdf')
+    ```
+    then, check that the path and the model name are correct.
+
 
 
 ### Reproducing The Simulation Experiments
@@ -99,14 +105,14 @@ Please refer to section [\<reporoot\>/docs/analysing-the-simulation-speed-improv
 
 #### Testing on a Momentum-based Whole-body Torque Controller
 
-This set of experiments tests the simulator on a controller performing a complex trajectory. For this purpose we integrated the simulator library, configured to emulate the iCub humanoid robot model with 23 degrees of freedom, with a momentum-based whole-body torque controller. The controller task balances the robot on a single foot while performing dynamic motions with the arms and the free leg.
+This set of experiments tests the simulator on a controller performing a complex trajectory. For this purpose we configured the simulator library to emulate the iCub humanoid robot model with 23 degrees of freedom and integrated it with a momentum-based whole-body torque controller. The controller task balances the robot on a single foot while performing dynamic motions with the arms and the free leg.
 This relates to Section III - C of the paper.
 
 Please refer to section [\<reporoot\>/docs/testing-on-a-momentum-based-whole-body-torque-controller.md](./docs/testing-on-a-momentum-based-whole-body-torque-controller.md).
 
 #### Comparing our Simulator with Gazebo
 
-The third set of experiments compares our simulator with Gazebo, commonly used in the robotics community, while running a benchmark test we define for that purpose.
+The third set of experiments compares our simulator with Gazebo, commonly used in the robotics community, while running a benchmark test we've defined for that purpose.
 This relates to Section III - D of the paper.
 
 #### Analysing the Design Flexibility
