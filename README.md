@@ -8,7 +8,6 @@ N. Guedelha, V. Pasandi, G. L'Erario, S. Traversaro and D. Pucci, "A Flexible MA
 </div>
 
 <p align="center">
-:construction: Work in progress (recording of the slides)
 </p>
 
 <div align="center">
