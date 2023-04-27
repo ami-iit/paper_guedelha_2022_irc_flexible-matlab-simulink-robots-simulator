@@ -62,20 +62,28 @@ Once the packages have been installed, you just need to re-run the `robotology_s
 #### :eyes: Checking The Installation
 1. After running the one-line installation and `robotology_setup`, you should be able to run the following MATLAB code without any error:
    ```
-   vec = iDynTree.Vector3();
-   vec.fromMatlab([1,2,3])
-   vec.toString();
+   >> vec = iDynTree.Vector3()
+   >> vec.fromMatlab([1,2,3])
+   >> vec.toString()
+   ans =
+       '1 2 3 '
    ```
-1. Check the MATLABPATH environment variable. It should now have...
+1. Check the added entries in the MATLAB search path:
    ```
-   <install-path>/mex: <install-path>/share/WBToolbox: <install-path>/share/WBToolbox/images
+   >> display(path)
+   <install-path>/share/WBToolbox: <install-path>/share/WBToolbox/images: <install-path>/mex/+wbc/simulink: <install-path>/mex/+wbc/examples: <install-path>/mex: ...
    ```
-   Check the mex and Simulink libraries in the folder `<install-path>/mex`. It should contain:
+1. Check the mex and Simulink libraries in the folder `<install-path>/mex`. It should contain:
    ```
-   +iDynTree               BlockFactory.mexmaci64      mwbs_lib.slx
-   +iDynTreeWrappers       BlockFactory.tlc            mwbs_robotDynamicsWithContacts_lib.slx
-   +mwbs                   iDynTreeMEX.mexmaci64       mwbs_robotSensors_lib.slx
-   +yarp.                  yarpMEX.mexmaci64           mwbs_visualizers_lib.slx
+   +casadi                  SwigMem.m                 mesh2tri.m                               slblocks.m
+   +iDynTree                SwigRef.m                 mwbs_lib.slx                             swig_typename_convertor_matlab2cpp.m
+   +iDynTreeWrappers        SwigStorage.m             mwbs_robotDynamicsWithContacts_lib.slx   yarpMEX.mexmaci64
+   +mwbs                    SwigType.m                mwbs_robotSensors_lib.slx                yarpSwigGet.m
+   +wbc                     casadiMEX.mexmaci64       mwbs_visualizers_lib.slx                 yarpSwigMem.m
+   +yarp                    iDynTreeMEX.mexmaci64     osqp.m                                   yarpSwigRef.m
+   BlockFactory.mexmaci64   iDynTreeSwigGet.m         osqp_mex.mexmaci64                       yarpSwigStorage.m
+   BlockFactory.tlc         iDynTreeSwigMem.m         returntypes.m
+   SwigGet.m                iDynTreeSwigRef.m         returntypes_call.m
    ```
 1. The `Matlab Whole-Body Simulator` library, along with the sub-libraries **robotDynamicsWithContacts**, **robotSensors** and **visualizers** should be visible in the Simulink Library Browser. They can be dragged and dropped into any open Simulink model.
    <img width="963" alt="image" src="https://user-images.githubusercontent.com/6848872/116485698-1ff57580-a88c-11eb-8856-c4527e00b401.png">
